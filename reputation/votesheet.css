@@ -1,0 +1,58 @@
+@charset "UTF-8";
+#Vote .Title {
+	float: left;
+	width: 90%;
+	background-color: #444;
+	color: #fff;
+	text-align: center;
+	padding: 3px;
+}
+#Vote .Cancel {
+	float: right;
+}
+#Vote .Caution {
+	font-size: 8pt;
+	clear: both;
+	padding: 3px;
+}
+#Vote {
+	box-shadow: 6px 6px 10px 5px rgba(0,0,0,0.4);
+	position: absolute;
+	left: 100px;
+	width: 420px;
+	height: 720px;
+	border: #fff solid 2px;
+	border-radius: 10px;
+	padding: 8px;
+	background-color: #eee;
+	z-index: 100;
+}
+
+#Vote textarea {
+	max-width: 380px;
+	min-width: 380px;
+	width: 380px;
+	height: 100px;
+	max-height: 100px;
+}
+#Vote #Distribute div {
+	clear: both;
+}
+#Vote #Distribute div span.Caption {
+	line-height: 20px;
+	float: left;
+}
+
+#Vote #Distribute div .view {
+	border: 1px solid;
+	float: right;
+	width: 30px;
+	text-align: center;
+	margin-left: 6px;
+}
+
+#Vote #Distribute div>input[type=range] {
+	width: 200px;
+	height: 20px;
+	float: right;
+}

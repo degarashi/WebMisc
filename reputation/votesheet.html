@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">		
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		
+		<link rel="stylesheet" type="text/css" href="votesheet.css">
+		<script type="text/javascript" src="lang_sw.js"></script>
+		<script src="RatioValue.js" type="text/javascript"></script>
+		
+		<!-- for JSlider -->
+		<link rel="stylesheet" href="css/jslider.css" type="text/css">
+		<link rel="stylesheet" href="css/jslider.plastic.css" type="text/css">
+		<script type="text/javascript" src="./js/jshashtable-2.1_src.js"></script>
+		<script type="text/javascript" src="./js/jquery.numberformatter-1.2.3.js"></script>
+		<script type="text/javascript" src="./js/tmpl.js"></script>
+		<script type="text/javascript" src="./js/jquery.dependClass-0.1.js"></script>
+		<script type="text/javascript" src="./js/draggable-0.1.js"></script>
+		<script type="text/javascript" src="./js/jquery.slider.js"></script>
+		<style type="text/css" media="screen">
+		 .layout { padding: 10px; font-family: Georgia, serif; }
+		 .layout-slider { padding-top: 10px; width: 90%; padding-left:5%;}
+		 .layout-slider-settings { font-size: 12px; padding-bottom: 10px; }
+		 .layout-slider-settings pre { font-family: Courier; }
+		</style>
+		<!-- end -->
+		
+		<script type="text/javascript">
+			InitVoteSheet = function (){
+				ConvertLang($("body"));
+								
+				const NSLIDER = $(".Slider").length;
+				const MAXVALUE = 100;
+				var ary = Array();
+				for(var i=0 ; i<NSLIDER ; i++)
+				    ary[i] = 30;
+			    
+				RV = new RatioValue(ary, MAXVALUE, false);
+				$(".Slider, .SliderE").slider({
+					"from": 0,
+					"to": 100,
+					"step": 1,
+					"round": 0,
+					"format": {
+						"format": '##.0',
+						"locale": 'ja'
+					},
+					"dimension": '&nbsp;%',
+					"skin": "plastic"
+				});
+				GB = false;
+				$(".Slider").each(function(index, e) {
+					var sfunc = $(e).slider;
+					sfunc.call($(e)).onstatechange = function(value) {
+					if(!GB) {
+						GB = true;
+						RV.setValue(index, parseInt(value));
+						var SL = $(".Slider");
+						for(var i=0 ; i<SL.length ; i++)
+							sfunc.call(SL.eq(i), "value", RV.getValue(i));
+						GB = false;
+					}
+				}});
+				$(".Slider").eq(0).slider("value", RV.getValue(0));
+			}
+		</script>
+		
+		</head>
+	<body>
+		<div id="Vote">
+			<div class="Title lang">
+				[ja:アンケート用紙][en:Survey form]
+			</div>
+			<button class="Cancel" type="button">X</button>
+			<div class="Caution lang">
+				[ja:注：「その他」欄はグラフへ表示されません。あくまで参考です][en:Caption:]
+			</div>
+			<form action="vote.php", method="post">
+				<fieldset>
+					<legend class="lang">[ja:要望][en:Demand]</legend>
+					<fieldset id="Genre">
+						<legend class="lang">[ja:ジャンル][en:Genre]</legend>
+						<input type="radio" name="genre" value="none" checked="checked">
+						<span class="lang">[ja:無回答][en:(NA)]</span>
+						<input type="radio" name="genre" value="stg">
+						<span class="lang">[ja:STG][en:Shump]</span>
+						<input type="radio" name="genre" value="fps">FPS
+					</fieldset>
+					<fieldset id="Distribute">
+						<legend class="lang">[ja:力の入れ具合][en:Distribute]</legend>
+						<div>
+							<span class="Caption lang">[ja:グラフィック][en:Graphic]</span>
+							<div class="layout-slider"><input class="Slider" type="slider" name="demand/graphic" value="30" /></div>
+						</div>
+						<div>
+							<span class="Caption">AI</span>
+							<div class="layout-slider"><input class="Slider" type="slider" name="demand/ai" value="30" /></div>
+						</div>
+						<div>
+							<span class="Caption lang">[ja:シングル][en:SinglePlay]</span>
+							<div class="layout-slider"><input class="Slider" type="slider" name="demand/single" value="30" /></div>
+						</div>
+						<div>
+							<span class="Caption lang">[ja:マルチ(COOP)][en:Multi(coop)]</span>
+							<div class="layout-slider"><input class="Slider" type="slider" name="demand/multi_coop" value="30" /></div>
+						</div>
+						<div>
+							<span class="Caption lang">[ja:マルチ(VS)][en:Multi(versus)]</span>
+							<div class="layout-slider"><input class="Slider" type="slider" name="demand/multi_vs" value="30" /></div>
+						</div>
+					</fieldset>
+				</fieldset>
+				
+				<fieldset class="Problem">
+					<legend class="lang">[ja:町の問題点][en:Problem]</legend>
+					<input type="checkbox" name="problem/kougai"><span class="lang">[ja:公害][en:Kougai]</span>
+					<input type="checkbox" name="problem/hanzai"><span class="lang">[ja:犯罪][en:Hanzai]</span>
+					<input type="checkbox" name="problem/contents"><span class="lang">[ja:コンテンツの量][en:Containts]</span>
+					<input type="checkbox" name="problem/update"><span class="lang">[ja:更新頻度][en:Refresh]</span>
+					<div><input type="checkbox" name="problem/other"><span class="lang">[ja:その他][en:Other]</span><input type="text" name="problem/text"></div>
+				</fieldset>
+				
+				<fieldset class="Evaluation">
+					<legend class="lang">[ja:管理人は頑張ってると思いますか？][en:Overall evaluation]</legend>
+					<div class="layout-slider"><input class="SliderE" type="slider" name="evaluation" value="50" /></div>
+					<!--<label>0%<input style="width: 80%" type="range" min="0" max="100" value="50" name="evaluation">100%</label>-->
+				</fieldset>
+				
+				<fieldset class="FreeText">
+					<legend class="lang">[ja:自由記入欄(オプション)][en:Free-text space(optional)]</legend>
+					<textarea name="freetext"></textarea>
+				</fieldset>
+				<div style="text-align: center;">
+					<input type="submit">
+				</div>
+			</form>
+		</div>
+	</body>
+</html>
