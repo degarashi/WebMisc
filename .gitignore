@@ -1,1 +1,5 @@
 *.*~
+clap/.project
+clap/.settings
+/clap/nbproject/private/
+/clap/html/
