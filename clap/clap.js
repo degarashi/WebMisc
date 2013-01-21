@@ -11,24 +11,59 @@ URL_GETCLAP = "getclap.php";
 function DGClap(claparea) {
 	DGBase.call(this);
 	
-	// 使う予定のHTML要素を取得しておく
-	this.clap = claparea.find("canvas");						// 表示領域
-	this.form = claparea.find("form");							// コメント入力フォーム
-	this.comment = this.form.find("input[type=text]");			// コメント入力欄
-	this.send = this.form.find("input[type=button]");			// 拍手送信ボタン
-	this.commentArea = claparea.find(".clap_CommentArea");		// コメント表示ウィンドウ
-	this.opencomment = claparea.find(".clap_OpenComment");		// コメント表示ウィンドウを開くためのボタン
-	this.commentOffset = claparea.find(".clap_CommentCounter");		// 表示中のコメント位置(オフセット)
-	this.n_comment = claparea.find(".clap_NComment");				// コメントが全部で幾つあるか
+	// 使う予定のHTML要素を生成しておく
+
+	// 表示領域
+	this.clap = $("<canvas width='128' height='24'>", {
+		text: "お使いのブラウザがCanvasに対応していない様です"
+	}).appendTo(claparea);
+	
+	// コメント入力フォーム
+	this.form = $("<form>", {
+		action: "#"
+	}).appendTo(claparea);
+	
+	// コメント入力欄
+	this.comment = $("<input>", {
+		type: "text"
+	}).appendTo(this.form);
+	
+	// 拍手送信ボタン
+	this.send = $("<input>", {
+		type: "button",
+		value:"拍手を送信"
+	}).appendTo(this.form);
+	
+	$("<hr>").appendTo(claparea);
+	
+	// コメント表示ウィンドウ
+	this.commentArea = $("<div>", {
+		"class": "clap_CommentArea"
+	}).appendTo(claparea);
+	
+	// コメント表示ウィンドウを開くためのボタン
+	this.opencomment = $("<button>", {
+		"class": "clap_OpenComment",
+		text: "コメントを表示"
+	}).appendTo(claparea);
+	
+	// 表示中のコメント位置(オフセット)
+	this.commentOffset = $("<div>", {
+		"class": "clap_CommentCounter"
+	}).appendTo(this.commentArea);
+	
+	// コメントが全部で幾つあるか
+	this.n_comment = claparea.find(".clap_NComment");
 	
 	var self = this;
 	//! Canvasに拍手数を描画する
 	/*!	@param[in] data PHPで取得したJSONデータ */
 	function _refreshCanvasValue(data) {
-		canvas = self.clap.get(0);	// DOMElementを取得
+		var clap = self.clap;
+		var canvas = clap.get(0);	// DOMElementを取得
 		var ctx = canvas.getContext("2d");
 		if(ctx) {
-			ctx.clearRect(0,0, self.clap.attr("width"), self.clap.attr("height"));
+			ctx.clearRect(0,0, clap.attr("width"), clap.attr("height"));
 			// 拍手数の描画
 			var ox = 16,
 				oy = 14;
@@ -62,10 +97,6 @@ function DGClap(claparea) {
 				break;
 			self.commentArea.append(
 				$("<div>", {text: item, "class":"clap_Comment"})
-					.css("border-style","solid")
-					.css("border-width", "0px")
-					.css("border-bottom-width", "1px")
-					.css("border-color", "#ccc")
 			);
 		}
 	};

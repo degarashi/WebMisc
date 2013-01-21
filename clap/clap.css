@@ -1,0 +1,40 @@
+/* 
+    Document   : clap
+    Created on : 2013/01/21, 13:55:13
+    Author     : slice
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.clap_Area {
+	width: 400px;
+	background: #eee;
+	overflow: hidden;
+	position: relative;
+}
+
+.clap_Area canvas {
+	vertical-align: middle;
+	float: left;
+	border: dotted;
+	border-width: 0px;
+	border-right-width: 1px;
+	padding: 0px;
+}
+.clap_Area hr {
+	clear: both;
+	margin: 0px;
+}
+.clap_Area form {
+	float: right;
+}
+.clap_Area div {
+	margin: 0px;
+	padding: 0px;
+}
+.clap_Comment {
+	border-style: solid;
+	border-width: 0px;
+	border-bottom-width: 1px;
+	border-color: #ccc;
+}
