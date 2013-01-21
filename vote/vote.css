@@ -1,0 +1,78 @@
+/* 
+    Document   : vote.css
+    Created on : 2013/01/18, 3:55:21
+    Author     : slice
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.vote_Area {
+	width: 160px;
+	display: block;
+	background-color: #fff;
+}
+.vote_ChoiceArea {
+	overflow: hidden;
+}
+.vote_Choice {
+	border-width: 1px;
+	border-style: outset;
+	font-size: 14px;
+	vertical-align: middle;
+	border-bottom-left-radius: 8px;
+	border-top-right-radius: 8px;
+	position: relative;
+}
+.vote_Title {
+	text-align: center;
+	background-color: #eef;
+	font-weight: bold;
+	border-bottom-color: #ccc;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	margin: 1px;
+	font-size: 13px;
+}
+.vote_Area {
+	border-style: inset;
+	border-width: 1px;
+	box-shadow: 3px 3px 3px rgba(0,0,0,0.4);
+	border-radius: 4px;
+}
+.vote_Desc {
+	margin: 2px;
+	font-size: 14px;
+}
+.vote_Send {
+	position: relative;
+	width: 50%;
+	left: 25%;
+}
+.vote_ResultBar {
+	border-style: outset;
+	border-width: 1px;
+	padding: 2px;
+	width: 88%;
+	left: 5%;
+	position: relative;
+	font-size: 14px;
+}
+.vote_ResultBarOuter {
+	background-color: #aaa;
+	height: 10px;
+	width: 80%;
+	float: left;
+}
+.vote_ResultBarInner {
+	background-color: #44f;
+	height: 80%;
+	top: 10%;
+	position: relative;
+	margin-left: 2px;
+	margin-right: 2px;
+}
+.vote_ResultVote {
+	left: 4px;
+	position: relative;
+	font-size: 12px;
+}

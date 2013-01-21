@@ -1,4 +1,5 @@
 <?php
+	require('../loginfo.php');
 	require('dgclap.php');
 	
 	/*	arguments:
@@ -21,49 +22,10 @@
 	
 	try {
 		// connect MySQL database
-		$ds = new DGSql('slice', 'root', 'hexensql');
-		$ip = $_SERVER['REMOTE_ADDR'];
-
-		// ユーザーIDの取得 / 生成
-		$ds->prepare('SELECT * FROM clap_user WHERE ip=:ip;');
-		$ds->setParam('ip', $ip);
-		$uid = -1;
-		if($ds->execute(function($item) {
-				global $uid;
-				$uid = $item['userID'];
-			}) === 0)
-		{
-			// ユーザーIDの登録
-			$host = gethostbyaddr($ip);
-			
-			$ds->prepare('INSERT INTO clap_user(ip,host) VALUES(:ip, :host);');
-			$ds->setParams(array('ip' => $ip,
-									'host' => $host));
-			$ds->execute(NULL);
-			
-			$ds->prepare('SELECT * FROM clap_user WHERE ip=:ip;');
-			$ds->setParam('ip', $ip);
-			$ds->execute(function($item) {
-				global $uid;
-				$uid = $item['userID'];
-			});
-		}
+		$clap = new DGClap($LOGIN_DB, $LOGIN_USER, $LOGIN_PASS, $_SERVER['REMOTE_ADDR']);
+		$clap->sendClap($comment);
 		
-		// コメント書き込み
-		$ds->prepare('INSERT INTO clap(userID,comment) VALUES(:uid, :comment);');
-		$ds->setParams(array(
-			'uid' => $uid,
-			'comment' => $comment
-		));
-		$ds->execute(NULL);
-		
-		// JSONP対応
-		if(is_string($_POST['callback'])) {
-			echo $_POST['callback'] . '({}';
-			if(is_string($_POST['cb_param']))
-				echo ',' . $_POST['cb_param'];
-			echo ');';
-		}
+		ReturnJSONP(array());
 	} catch(PDOException $e) {
 		echo 'PDO Exception throwed!<br>' . $e->getMessage();
 	} catch(Exception $e) {

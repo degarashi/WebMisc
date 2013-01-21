@@ -1,18 +1,3 @@
-// サーバーからJSONPにより取得する場合のコールバック関数
-g_clapList = [];
-g_clapUID = 0;
-function CB_Clap(data, cbparam) {
-	// cbparamはJSON形式
-	var uid = parseInt(cbparam.uid, 10);
-	// UIDから受信先のクラスを特定
-	g_clapList[uid]._cbClap(data, cbparam);
-}
-function RegClap(dg) {
-	// 他のクラスと区別するために一意のIDを付加
-	var uid = g_clapUID++;
-	dg.uid = uid;
-	g_clapList[uid] = dg;
-}
 
 //! これをtrueにするとJSONPを使った通信となる
 FLAG_USEJSONP = true;
@@ -24,6 +9,8 @@ URL_GETCLAP = "getclap.php";
 //! 拍手の表示や送信
 /*! @param[in] claparea 拍手を表示させる為のCanvas要素(JQuery形式) */
 function DGClap(claparea) {
+	DGBase.call(this);
+	
 	// 使う予定のHTML要素を取得しておく
 	this.clap = claparea.find("canvas");						// 表示領域
 	this.form = claparea.find("form");							// コメント入力フォーム
@@ -33,11 +20,6 @@ function DGClap(claparea) {
 	this.opencomment = claparea.find(".clap_OpenComment");		// コメント表示ウィンドウを開くためのボタン
 	this.commentOffset = claparea.find(".clap_CommentCounter");		// 表示中のコメント位置(オフセット)
 	this.n_comment = claparea.find(".clap_NComment");				// コメントが全部で幾つあるか
-	
-	this.cbFunc = {};
-	this.cbid = 0;
-
-	RegClap(this);
 	
 	var self = this;
 	//! Canvasに拍手数を描画する
@@ -69,7 +51,7 @@ function DGClap(claparea) {
 			ctx.lineTo(10, 10);
 			ctx.lineTo(18,18);
 			ctx.lineTo(116,18);
-			ctx.stroke();			
+			ctx.stroke();
 		}
 		// コメントの更新
 		self.commentArea.find(".clap_Comment").remove();		
@@ -89,57 +71,21 @@ function DGClap(claparea) {
 	};
 	// GetClap問い合わせ
 	function _refreshCanvas(commentOffset, commentMax, callback) {
-		self.cbFunc[self.cbid] = callback;
-		var aux = {uid: self.uid.toString(),
-					cbid: self.cbid++};
 		var param = { limit: commentMax,
 						offset: commentOffset };
-		if(FLAG_USEJSONP) {			
-			param.callback = "CB_Clap";
-			param.cb_param = JSON.stringify(aux);
-			$.post(URL_GETCLAP, param, null, "jsonp");
-		} else {
-			// PHPでカウント数を取得して、処理完了と同時に表示を更新
-			$.post(URL_GETCLAP, param,
-				function(data, status){
-					if(status === "success")
-						CB_Clap(data, aux);
-				},
-				"json");
-		}
+		// PHPでカウント数を取得して、処理完了と同時に表示を更新
+		self._callPHP(URL_GETCLAP, param, function(data,aux) {
+			_refreshCanvasValue(data);
+			// コールバックを(あれば)ここで呼ぶ
+			if(typeof(callback) === "function")
+				callback();
+		}, FLAG_USEJSONP);
 	}
 	// SendClapアクセス
 	function _sendClap(cmt, callback) {
-		self.cbFunc[self.cbid] = callback;
-		var aux = {uid: self.uid.toString(),
-					cbid: self.cbid++};
 		var param = {comment: cmt};
-		if(FLAG_USEJSONP) {
-			param.callback = "CB_Clap";
-			param.cb_param = JSON.stringify(aux);
-			$.post(URL_SENDCLAP, param, null, "jsonp");
-		} else {
-			$.post(URL_SENDCLAP, param,
-				function(data, status) {
-					if(status === "success")
-						CB_Clap(data, aux);
-				},
-				"json");
-		}
+		self._callPHP(URL_SENDCLAP, param, callback, FLAG_USEJSONP);
 	}
-	// JSONP時のコールバック関数
-	this._cbClap = function(data, aux) {
-		// 拍手受信であれば表示を更新
-		if(typeof(data.count) !== "undefined")
-			_refreshCanvasValue(data);
-		
-		// コールバックを(あれば)ここで呼ぶ
-		var cb = this.cbFunc[aux.cbid];
-		if(typeof(cb) === "function") {
-			cb();
-			this.cbFunc[aux.cbid] = undefined;
-		}
-	};
 
 	// とりあえずダミーのデータを表示しておく
 	_refreshCanvasValue({
@@ -227,8 +173,8 @@ function DGClap(claparea) {
 		}
 	);
 }
-
-DGClap.prototype = {};
+DGClap.prototype = Object.create(DGBase.prototype);
+DGClap.prototype.constructor = DGClap;
 
 $(function() {
 	var clapList = [];
